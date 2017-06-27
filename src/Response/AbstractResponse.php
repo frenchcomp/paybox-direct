@@ -72,6 +72,11 @@ abstract class AbstractResponse implements ResponseInterface
     private $cardType = null;
 
     /**
+     * @var array
+     */
+    private $content = [];
+
+    /**
      * @var mixed[]
      */
     protected $filteredParameters;
@@ -81,6 +86,7 @@ abstract class AbstractResponse implements ResponseInterface
      */
     public function __construct(array $parameters)
     {
+        $this->content = $parameters;
         // Cleanup array to set false for empty/invalid values.
         $this->filteredParameters = array_map(function ($value) {
             if (in_array($value, ['', '???'], true)) {
@@ -206,5 +212,13 @@ abstract class AbstractResponse implements ResponseInterface
     public function getCardType()
     {
         return $this->cardType;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    final public function getContent()
+    {
+        return $this->content;
     }
 }

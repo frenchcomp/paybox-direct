@@ -99,4 +99,11 @@ interface ResponseInterface
      * @return string|null|false Null if not requested, false if empty string returned by Paybox.
      */
     public function getCardType();
+
+    /**
+     * Get response content
+     *
+     * @return array
+     */
+    public function getContent();
 }
