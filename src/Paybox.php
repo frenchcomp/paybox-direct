@@ -173,4 +173,15 @@ final class Paybox
         $resolver->setAllowedValues('paybox_version', Version::getConstants());
         $resolver->setAllowedValues('paybox_default_activity', Activity::getConstants());
     }
+
+    /**
+     * Get parameters that have been set for passed request object
+     *
+     * @param RequestInterface $request
+     * @return array
+     */
+    public function getParametersSet(RequestInterface $request)
+    {
+        return $this->httpClient->getParameters($request->getRequestType(), $request->getParameters());
+    }
 }

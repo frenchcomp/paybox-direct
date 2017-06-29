@@ -97,22 +97,8 @@ abstract class AbstractHttpClient
             throw new \InvalidArgumentException('The response class must implement '.ResponseInterface::class.'.');
         }
 
-        $bodyParams = array_merge($parameters, $this->baseParameters);
-        $bodyParams['TYPE'] = $type;
-        $bodyParams['NUMQUESTION'] = $this->questionNumber;
+        $bodyParams = $this->getParameters($type, $parameters);
         $bodyParams['DATEQ'] = null !== $parameters['DATEQ'] ? $parameters['DATEQ'] : date('dmYHis');
-        // Restore default_currency from parameters if given
-        if (array_key_exists('DEVISE', $parameters)) {
-            $bodyParams['DEVISE'] = null !== $parameters['DEVISE'] ? $parameters['DEVISE'] : $this->defaultCurrency;
-        }
-        if (!array_key_exists('ACTIVITE', $parameters) && $this->defaultActivity) {
-            $bodyParams['ACTIVITE'] = $this->defaultActivity;
-        }
-
-        // `ACTIVITE` must be a string of 3 numbers to get it working with Paybox API.
-        if (array_key_exists('ACTIVITE', $bodyParams)) {
-            $bodyParams['ACTIVITE'] = str_pad($bodyParams['ACTIVITE'], 3, '0', STR_PAD_LEFT);
-        }
 
         $response = $this->request($bodyParams);
 
@@ -134,6 +120,35 @@ abstract class AbstractHttpClient
         }
 
         return $response;
+    }
+
+    /**
+     * Get parameters specified for request
+     *
+     * @param $type
+     * @param array $parameters
+     *
+     * @return array
+     */
+    final public function getParameters($type, array $parameters)
+    {
+        $bodyParams = array_merge($parameters, $this->baseParameters);
+        $bodyParams['TYPE'] = $type;
+        $bodyParams['NUMQUESTION'] = $this->questionNumber;
+        // Restore default_currency from parameters if given
+        if (array_key_exists('DEVISE', $parameters)) {
+            $bodyParams['DEVISE'] = null !== $parameters['DEVISE'] ? $parameters['DEVISE'] : $this->defaultCurrency;
+        }
+        if (!array_key_exists('ACTIVITE', $parameters) && $this->defaultActivity) {
+            $bodyParams['ACTIVITE'] = $this->defaultActivity;
+        }
+
+        // `ACTIVITE` must be a string of 3 numbers to get it working with Paybox API.
+        if (array_key_exists('ACTIVITE', $bodyParams)) {
+            $bodyParams['ACTIVITE'] = str_pad($bodyParams['ACTIVITE'], 3, '0', STR_PAD_LEFT);
+        }
+
+        return $bodyParams;
     }
 
     /**
