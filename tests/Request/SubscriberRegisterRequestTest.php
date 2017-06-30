@@ -81,7 +81,7 @@ class SubscriberRegisterRequestTest extends AbstractTransactionRequestTest
      */
     protected function getExpectedSha1()
     {
-        return '678AEDDA00FA890C9056626FFB5699C57BC602B0L';
+        return '678AEDDA00FA890C9056626FFB5699C57BC602B0';
     }
 
     /**
