@@ -101,14 +101,7 @@ abstract class AbstractHttpClient
         $bodyParams['DATEQ'] = null !== $parameters['DATEQ'] ? $parameters['DATEQ'] : date('dmYHis');
 
         $response = $this->request($bodyParams);
-
-        // Generate results array
-        $results = [];
-        foreach (explode('&', $response) as $element) {
-            list($key, $value) = explode('=', $element);
-            $value = utf8_encode(trim($value));
-            $results[$key] = $value;
-        }
+        $results = self::parseHttpResponse($response);
 
         $this->questionNumber = (int) $results['NUMQUESTION'] + 1;
 
@@ -149,6 +142,24 @@ abstract class AbstractHttpClient
         }
 
         return $bodyParams;
+    }
+
+    /**
+     * Generate results array from HTTP response body
+     *
+     * @param string $response
+     * @return array
+     */
+    final public static function parseHttpResponse($response)
+    {
+        $results = [];
+        foreach (explode('&', $response) as $element) {
+            list($key, $value) = explode('=', $element);
+            $value = utf8_encode(trim($value));
+            $results[$key] = $value;
+        }
+
+        return $results;
     }
 
     /**
