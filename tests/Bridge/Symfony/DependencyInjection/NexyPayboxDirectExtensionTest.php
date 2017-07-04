@@ -100,7 +100,8 @@ class NexyPayboxDirectExtensionTest extends AbstractExtensionTestCase
             ],
         ]);
 
-        $request = new AuthorizeRequest(uniqid('npd_extension_'), 1337, '1111222233334444', '1216');
+        $expDate = date('my', time() + 31557600); // card expiration = current time + year
+        $request = new AuthorizeRequest(uniqid('npd_extension_'), 1337, '1111222233334444', $expDate);
 
         $response = $this->container->get('nexy_paybox_direct.sdk')->sendDirectRequest($request);
 

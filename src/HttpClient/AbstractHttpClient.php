@@ -97,10 +97,37 @@ abstract class AbstractHttpClient
             throw new \InvalidArgumentException('The response class must implement '.ResponseInterface::class.'.');
         }
 
+        $bodyParams = $this->getParameters($type, $parameters);
+        $bodyParams['DATEQ'] = null !== $parameters['DATEQ'] ? $parameters['DATEQ'] : date('dmYHis');
+
+        $response = $this->request($bodyParams);
+        $results = self::parseHttpResponse($response);
+
+        $this->questionNumber = (int) $results['NUMQUESTION'] + 1;
+
+        /** @var ResponseInterface $response */
+        $response = new $responseClass($results);
+
+        if (!$response->isSuccessful()) {
+            throw new PayboxException($response);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Get parameters specified for request
+     *
+     * @param $type
+     * @param array $parameters
+     *
+     * @return array
+     */
+    final public function getParameters($type, array $parameters)
+    {
         $bodyParams = array_merge($parameters, $this->baseParameters);
         $bodyParams['TYPE'] = $type;
         $bodyParams['NUMQUESTION'] = $this->questionNumber;
-        $bodyParams['DATEQ'] = null !== $parameters['DATEQ'] ? $parameters['DATEQ'] : date('dmYHis');
         // Restore default_currency from parameters if given
         if (array_key_exists('DEVISE', $parameters)) {
             $bodyParams['DEVISE'] = null !== $parameters['DEVISE'] ? $parameters['DEVISE'] : $this->defaultCurrency;
@@ -114,9 +141,17 @@ abstract class AbstractHttpClient
             $bodyParams['ACTIVITE'] = str_pad($bodyParams['ACTIVITE'], 3, '0', STR_PAD_LEFT);
         }
 
-        $response = $this->request($bodyParams);
+        return $bodyParams;
+    }
 
-        // Generate results array
+    /**
+     * Generate results array from HTTP response body
+     *
+     * @param string $response
+     * @return array
+     */
+    final public static function parseHttpResponse($response)
+    {
         $results = [];
         foreach (explode('&', $response) as $element) {
             list($key, $value) = explode('=', $element);
@@ -124,16 +159,7 @@ abstract class AbstractHttpClient
             $results[$key] = $value;
         }
 
-        $this->questionNumber = (int) $results['NUMQUESTION'] + 1;
-
-        /** @var ResponseInterface $response */
-        $response = new $responseClass($results);
-
-        if (!$response->isSuccessful()) {
-            throw new PayboxException($response);
-        }
-
-        return $response;
+        return $results;
     }
 
     /**
