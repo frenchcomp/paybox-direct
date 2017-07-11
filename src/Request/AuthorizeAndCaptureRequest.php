@@ -17,6 +17,7 @@ namespace Nexy\PayboxDirect\Request;
 final class AuthorizeAndCaptureRequest extends AbstractReferencedBearerTransactionRequest
 {
     use AuthorizationTrait;
+    use ID3DTrait;
 
     /**
      * {@inheritdoc}
@@ -27,5 +28,13 @@ final class AuthorizeAndCaptureRequest extends AbstractReferencedBearerTransacti
             ? RequestInterface::SUBSCRIBER_AUTHORIZE_AND_CAPTURE
             : RequestInterface::AUTHORIZE_AND_CAPTURE
         ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameters()
+    {
+        return array_merge(parent::getParameters(), $this->getID3DParameters());
     }
 }
