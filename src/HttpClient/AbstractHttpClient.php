@@ -57,7 +57,7 @@ abstract class AbstractHttpClient
      */
     final public function __construct()
     {
-        $this->questionNumber = rand(0, time());
+        $this->questionNumber = mt_rand(1, 2000000000);
     }
 
     /**
