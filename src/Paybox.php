@@ -40,6 +40,10 @@ class Paybox
     const API_URL_RESCUE = 'https://ppps1.paybox.com/PPPS.php';
     const API_URL_TEST = 'https://preprod-ppps.paybox.com/PPPS.php';
 
+    const URL_3DS_PRODUCTION = 'https://tpeweb.paybox.com/cgi/RemoteMPI.cgi';
+    const URL_3DS_RESCUE = 'https://tpeweb1.paybox.com/cgi/RemoteMPI.cgi';
+    const URL_3DS_TEST = 'https://preprod-tpeweb.paybox.com/cgi/RemoteMPI.cgi';
+
     /**
      * @var ValidatorInterface
      */
@@ -183,5 +187,15 @@ class Paybox
     public function getParametersSet(RequestInterface $request)
     {
         return $this->httpClient->getParameters($request->getRequestType(), $request->getParameters());
+    }
+
+    /**
+     * Get 3DSecure URL for specified environment
+     *
+     * @return string
+     */
+    public function get3dsUrl()
+    {
+        return true === $this->options['production'] ? self::URL_3DS_PRODUCTION : self::URL_3DS_TEST;
     }
 }
