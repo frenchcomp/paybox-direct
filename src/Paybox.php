@@ -44,6 +44,8 @@ class Paybox
     const URL_3DS_RESCUE = 'https://tpeweb1.paybox.com/cgi/RemoteMPI.cgi';
     const URL_3DS_TEST = 'https://preprod-tpeweb.paybox.com/cgi/RemoteMPI.cgi';
 
+    const INVALID_CREDENTIALS_MESSAGE = 'Paybox SDK: invalid change of credentials';
+
     /**
      * @var ValidatorInterface
      */
@@ -176,6 +178,36 @@ class Paybox
 
         $resolver->setAllowedValues('paybox_version', Version::getConstants());
         $resolver->setAllowedValues('paybox_default_activity', Activity::getConstants());
+    }
+
+    /**
+     * @param string      $site
+     * @param string      $rank
+     * @param string      $identifier
+     * @param string      $key
+     * @param string|null $version
+     * @return void
+     * @throws \Exception
+     */
+    public function setCredentials($site, $rank, $identifier, $key, $version = null)
+    {
+        if (!isset($site) || !isset($rank) || !isset($identifier) || !isset($key)) {
+            throw new \Exception(self::INVALID_CREDENTIALS_MESSAGE);
+        }
+        $this->options['paybox_site'] = $site;
+        $this->options['paybox_rank'] = $rank;
+        $this->options['paybox_identifier'] = $identifier;
+        $this->options['paybox_key'] = $key;
+        if (isset($version)) {
+            $version = strtoupper($version);
+            $allowedVersions = Version::getConstants();
+            if (!isset($allowedVersions[$version])) {
+                throw new \Exception(self::INVALID_CREDENTIALS_MESSAGE);
+            }
+            $this->options['paybox_version'] = $allowedVersions[$version];
+        }
+
+        $this->httpClient->setOptions($this->options);
     }
 
     /**
