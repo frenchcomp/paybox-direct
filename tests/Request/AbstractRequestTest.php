@@ -30,13 +30,14 @@ abstract class AbstractRequestTest extends AbstractPayboxSetupTest
         $request = $this->createBaseRequest();
         $response = $this->payboxRequest($request);
 
-        $this->assertInternalType('int', $response->getCode());
-        $this->assertInternalType('string', $response->getComment());
+        $this->assertSame(0, $response->getCode());
+        $this->assertIsInt($response->getCode());
+        $this->assertIsString($response->getComment());
         $this->assertSame('1999888', $response->getSite());
         $this->assertSame('32', $response->getRank());
-        $this->assertInternalType('int', $response->getCallNumber());
-        $this->assertInternalType('int', $response->getQuestionNumber());
-        $this->assertInternalType('int', $response->getTransactionNumber());
+        $this->assertIsInt($response->getCallNumber());
+        $this->assertIsInt($response->getQuestionNumber());
+        $this->assertIsInt($response->getTransactionNumber());
         $this->assertSame($this->getExpectedAuthorization(), $response->getAuthorization());
 
         // Not called extra attributes
@@ -77,7 +78,6 @@ abstract class AbstractRequestTest extends AbstractPayboxSetupTest
         $request = $this->createBaseRequest();
         $request
             ->setShowSha1(true)
-            ->setShowCountry(true)
             ->setShowCardType(true)
         ;
 
@@ -85,7 +85,6 @@ abstract class AbstractRequestTest extends AbstractPayboxSetupTest
 
         $this->assertSame(0, $response->getCode(), $response->getComment());
         $this->assertSame($this->getExpectedSha1(), $response->getSha1());
-        $this->assertSame($this->getExpectedCountry(), $response->getCountry());
         $this->assertSame($this->getExpectedCardType(), $response->getCardType());
     }
 
@@ -112,17 +111,9 @@ abstract class AbstractRequestTest extends AbstractPayboxSetupTest
     /**
      * @return string|bool
      */
-    protected function getExpectedCountry()
-    {
-        return false;
-    }
-
-    /**
-     * @return string|bool
-     */
     protected function getExpectedCardType()
     {
-        return 'Visa';
+        return 'cb2a5.2';
     }
 
     /**

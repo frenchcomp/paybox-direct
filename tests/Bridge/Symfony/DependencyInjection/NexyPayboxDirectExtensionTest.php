@@ -18,6 +18,7 @@ use Nexy\PayboxDirect\Enum\Version;
 use Nexy\PayboxDirect\HttpClient\GuzzleHttpClient;
 use Nexy\PayboxDirect\Paybox;
 use Nexy\PayboxDirect\Request\AuthorizeRequest;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
  * @author Sullivan Senechal <soullivaneuh@gmail.com>
@@ -87,6 +88,7 @@ class NexyPayboxDirectExtensionTest extends AbstractExtensionTestCase
      */
     public function testLoadWithNotExistentHttpClient()
     {
+        $this->expectException(ServiceNotFoundException::class);
         $this->load([
             'client' => 'fake',
         ]);
@@ -111,7 +113,7 @@ class NexyPayboxDirectExtensionTest extends AbstractExtensionTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getMinimalConfiguration()
+    protected function getMinimalConfiguration(): array
     {
         return [
             'paybox' => [
@@ -127,7 +129,7 @@ class NexyPayboxDirectExtensionTest extends AbstractExtensionTestCase
     /**
      * {@inheritdoc}
      */
-    protected function getContainerExtensions()
+    protected function getContainerExtensions(): array
     {
         return [
             new NexyPayboxDirectExtension(),

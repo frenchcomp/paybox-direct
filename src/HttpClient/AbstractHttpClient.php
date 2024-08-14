@@ -57,7 +57,11 @@ abstract class AbstractHttpClient
      */
     final public function __construct()
     {
-        $this->questionNumber = mt_rand(1, 2000000000);
+        try {
+            $this->questionNumber = random_int(0, 2000000000);
+        } catch (\Exception $exception) {
+            $this->questionNumber = rand(0, 2000000000);
+        }
     }
 
     /**
@@ -115,6 +119,8 @@ abstract class AbstractHttpClient
         return $response;
     }
 
+
+
     /**
      * Get parameters specified for request
      *
@@ -123,11 +129,12 @@ abstract class AbstractHttpClient
      *
      * @return array
      */
-    final public function getParameters($type, array $parameters)
+    final private function getParameters($type, array $parameters)
     {
         $bodyParams = array_merge($parameters, $this->baseParameters);
         $bodyParams['TYPE'] = $type;
         $bodyParams['NUMQUESTION'] = $this->questionNumber;
+        $bodyParams['DATEQ'] = null !== $parameters['DATEQ'] ? $parameters['DATEQ'] : date('dmYHis');
         // Restore default_currency from parameters if given
         if (array_key_exists('DEVISE', $parameters)) {
             $bodyParams['DEVISE'] = null !== $parameters['DEVISE'] ? $parameters['DEVISE'] : $this->defaultCurrency;
@@ -150,7 +157,7 @@ abstract class AbstractHttpClient
      * @param string $response
      * @return array
      */
-    final public static function parseHttpResponse($response)
+    final private static function parseHttpResponse($response)
     {
         $results = [];
         foreach (explode('&', $response) as $element) {
