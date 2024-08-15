@@ -19,7 +19,7 @@ final class RefundRequest extends AbstractNumberedReferencedTransactionRequest
     /**
      * {@inheritdoc}
      */
-    public function getRequestType()
+    public function getRequestType(): int
     {
         return RequestInterface::REFUND;
     }

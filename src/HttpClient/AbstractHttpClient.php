@@ -11,9 +11,24 @@
 
 namespace Nexy\PayboxDirect\HttpClient;
 
+use InvalidArgumentException;
 use Nexy\PayboxDirect\Exception\PayboxException;
 use Nexy\PayboxDirect\Paybox;
 use Nexy\PayboxDirect\Response\ResponseInterface;
+
+use function array_key_exists;
+use function array_merge;
+use function is_a;
+use function parse_str;
+use function random_int;
+
+use function str_pad;
+
+use function trim;
+use function utf8_encode;
+
+use const PHP_INT_MAX;
+use const STR_PAD_LEFT;
 
 /**
  * @author Sullivan Senechal <soullivaneuh@gmail.com>
@@ -22,55 +37,38 @@ use Nexy\PayboxDirect\Response\ResponseInterface;
  */
 abstract class AbstractHttpClient
 {
-    /**
-     * @var int
-     */
-    protected $timeout;
+    protected int $timeout;
 
-    /**
-     * @var int
-     */
-    protected $baseUrl = Paybox::API_URL_TEST;
+    protected string $baseUrl = Paybox::API_URL_TEST;
 
     /**
      * @var string[]
      */
-    private $baseParameters;
+    private array $baseParameters;
 
-    /**
-     * @var int
-     */
-    private $defaultCurrency;
+    private int $defaultCurrency;
 
-    /**
-     * @var int|null
-     */
-    private $defaultActivity = null;
+    private ?int $defaultActivity = null;
 
-    /**
-     * @var int
-     */
-    private $questionNumber;
+    private int $questionNumber;
 
-    /**
-     * Constructor.
-     */
     final public function __construct()
     {
-        try {
-            $this->questionNumber = random_int(0, 2000000000);
-        } catch (\Exception $exception) {
-            $this->questionNumber = rand(0, 2000000000);
-        }
+        $this->questionNumber = random_int(0, PHP_INT_MAX);
     }
 
     /**
      * @param array $options
      */
-    final public function setOptions($options)
+    final public function setOptions(array $options): void
     {
         $this->timeout = $options['timeout'];
-        $this->baseUrl = true === $options['production'] ? Paybox::API_URL_PRODUCTION : Paybox::API_URL_TEST;
+        if (!empty($options['production'])) {
+            $this->baseUrl = Paybox::API_URL_PRODUCTION;
+        } else {
+            $this->baseUrl = Paybox::API_URL_TEST;
+        }
+
         $this->baseParameters = [
             'VERSION' => $options['paybox_version'],
             'SITE' => $options['paybox_site'],
@@ -78,7 +76,9 @@ abstract class AbstractHttpClient
             'IDENTIFIANT' => $options['paybox_identifier'],
             'CLE' => $options['paybox_key'],
         ];
+
         $this->defaultCurrency = $options['paybox_default_currency'];
+
         if (array_key_exists('paybox_default_activity', $options)) {
             $this->defaultActivity = $options['paybox_default_activity'];
         }
@@ -95,17 +95,17 @@ abstract class AbstractHttpClient
      *
      * @throws PayboxException
      */
-    final public function call($type, array $parameters, $responseClass)
+    final public function call(int $type, array $parameters, string $responseClass): ResponseInterface
     {
-        if (!in_array(ResponseInterface::class, class_implements($responseClass))) {
-            throw new \InvalidArgumentException('The response class must implement '.ResponseInterface::class.'.');
+        if (!is_a($responseClass, ResponseInterface::class)) {
+            throw new InvalidArgumentException('The response class must implement ' . ResponseInterface::class . '.');
         }
 
         $bodyParams = $this->getParameters($type, $parameters);
-        $bodyParams['DATEQ'] = null !== $parameters['DATEQ'] ? $parameters['DATEQ'] : date('dmYHis');
+        $bodyParams['DATEQ'] = $parameters['DATEQ'] ?? date('dmYHis');
 
         $response = $this->request($bodyParams);
-        $results = self::parseHttpResponse($response);
+        $results = $this->parseHttpResponse($response);
 
         $this->questionNumber = (int) $results['NUMQUESTION'] + 1;
 
@@ -123,21 +123,19 @@ abstract class AbstractHttpClient
 
     /**
      * Get parameters specified for request
-     *
-     * @param $type
-     * @param array $parameters
-     *
-     * @return array
      */
-    final private function getParameters($type, array $parameters)
+    public function getParameters(int $type, array $parameters): array
     {
         $bodyParams = array_merge($parameters, $this->baseParameters);
+
         $bodyParams['TYPE'] = $type;
         $bodyParams['NUMQUESTION'] = $this->questionNumber;
-        $bodyParams['DATEQ'] = null !== $parameters['DATEQ'] ? $parameters['DATEQ'] : date('dmYHis');
+
+        $bodyParams['DATEQ'] = $parameters['DATEQ'] ?? date('dmYHis');
+
         // Restore default_currency from parameters if given
         if (array_key_exists('DEVISE', $parameters)) {
-            $bodyParams['DEVISE'] = null !== $parameters['DEVISE'] ? $parameters['DEVISE'] : $this->defaultCurrency;
+            $bodyParams['DEVISE'] = $parameters['DEVISE'] ?? $this->defaultCurrency;
         }
         if (!array_key_exists('ACTIVITE', $parameters) && $this->defaultActivity) {
             $bodyParams['ACTIVITE'] = $this->defaultActivity;
@@ -153,17 +151,12 @@ abstract class AbstractHttpClient
 
     /**
      * Generate results array from HTTP response body
-     *
-     * @param string $response
-     * @return array
      */
-    final private static function parseHttpResponse($response)
+    private function parseHttpResponse(string $response): array
     {
-        $results = [];
-        foreach (explode('&', $response) as $element) {
-            list($key, $value) = explode('=', $element);
+        parse_str($response, $results);
+        foreach ($results as &$value) {
             $value = utf8_encode(trim($value));
-            $results[$key] = $value;
         }
 
         return $results;
@@ -178,8 +171,6 @@ abstract class AbstractHttpClient
      * Sends a request to the server, receive a response and returns it as a string.
      *
      * @param string[] $parameters Request parameters
-     *
-     * @return string The response content
      */
-    abstract protected function request($parameters);
+    abstract protected function request(array $parameters): string;
 }

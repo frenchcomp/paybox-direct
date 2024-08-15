@@ -20,19 +20,19 @@ use Greg0ire\Enum\AbstractEnum;
  */
 final class Receiver extends AbstractEnum
 {
-    const PAYPAL = 'PAYPAL';
+    public const PAYPAL = 'PAYPAL';
 
-    const EMS = 'EMS';
+    public const EMS = 'EMS';
 
-    const ATOSBE = 'ATOSBE';
+    public const ATOSBE = 'ATOSBE';
 
-    const BCMC = 'BCMC';
+    public const BCMC = 'BCMC';
 
-    const PSC = 'PSC';
+    public const PSC = 'PSC';
 
-    const FINAREF = 'FINAREF';
+    public const FINAREF = 'FINAREF';
 
-    const BUYSTER = 'BUYSTER';
+    public const BUYSTER = 'BUYSTER';
 
-    const ONEY = '34ONEY';
+    public const ONEY = '34ONEY';
 }

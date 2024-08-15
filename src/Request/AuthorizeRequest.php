@@ -11,6 +11,8 @@
 
 namespace Nexy\PayboxDirect\Request;
 
+use function array_merge;
+
 /**
  * @author Sullivan Senechal <soullivaneuh@gmail.com>
  */
@@ -22,18 +24,19 @@ final class AuthorizeRequest extends AbstractReferencedBearerTransactionRequest
     /**
      * {@inheritdoc}
      */
-    public function getRequestType()
+    public function getRequestType(): int
     {
-        return $this->hasSubscriberRef()
-            ? RequestInterface::SUBSCRIBER_AUTHORIZE
-            : RequestInterface::AUTHORIZE
-        ;
+        if ($this->hasSubscriberRef()) {
+            return RequestInterface::SUBSCRIBER_AUTHORIZE;
+        }
+
+        return RequestInterface::AUTHORIZE;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getParameters()
+    public function getParameters(): array
     {
         return array_merge(parent::getParameters(), $this->getID3DParameters());
     }

@@ -5,6 +5,12 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="nexy_paybox_direct.http_client.guzzle" class="Nexy\PayboxDirect\HttpClient\GuzzleHttpClient" public="false" lazy="true" />
+        <service id="Nexy\PayboxDirect\HttpClient\GuzzleHttpClient"
+                 class="Nexy\PayboxDirect\HttpClient\GuzzleHttpClient"
+                 public="false"
+                 lazy="true" />
+
+        <service id="nexy_paybox_direct.http_client.guzzle"
+                 alias="Nexy\PayboxDirect\HttpClient\GuzzleHttpClient" />
     </services>
 </container>

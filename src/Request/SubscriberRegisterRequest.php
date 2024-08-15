@@ -19,22 +19,20 @@ final class SubscriberRegisterRequest extends AbstractReferencedBearerTransactio
     use AuthorizationTrait;
     use ID3DTrait;
 
-    /**
-     * @param string $subscriberRef
-     * @param string $reference
-     * @param int    $amount
-     * @param string $bearer
-     * @param string $validityDate
-     */
-    public function __construct($subscriberRef, $reference, $amount, $bearer, $validityDate)
-    {
+    public function __construct(
+        string $subscriberRef,
+        string $reference,
+        int $amount,
+        string $bearer,
+        string $validityDate
+    ) {
         parent::__construct($reference, $amount, $bearer, $validityDate, $subscriberRef);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getRequestType()
+    public function getRequestType(): int
     {
         return RequestInterface::SUBSCRIBER_REGISTER;
     }

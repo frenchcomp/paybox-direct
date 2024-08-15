@@ -21,7 +21,7 @@ final class UpdateAmountRequest extends AbstractNumberedTransactionRequest
     /**
      * {@inheritdoc}
      */
-    public function getRequestType()
+    public function getRequestType(): int
     {
         return RequestInterface::UPDATE_AMOUNT;
     }

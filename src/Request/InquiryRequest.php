@@ -19,7 +19,7 @@ final class InquiryRequest extends AbstractNumberedTransactionRequest
     /**
      * {@inheritdoc}
      */
-    public function getRequestType()
+    public function getRequestType(): int
     {
         return RequestInterface::INQUIRY;
     }

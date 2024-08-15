@@ -11,33 +11,33 @@
 
 namespace Nexy\PayboxDirect\Exception;
 
+use Exception;
 use Nexy\PayboxDirect\Response\ResponseInterface;
+use RuntimeException;
+
+use function sprintf;
 
 /**
  * @author Sullivan Senechal <soullivaneuh@gmail.com>
  */
-final class PayboxException extends \RuntimeException
+final class PayboxException extends RuntimeException
 {
-    /**
-     * @var ResponseInterface
-     */
-    private $response;
+    private ResponseInterface $response;
 
     /**
      * {@inheritdoc}
      */
-    public function __construct(ResponseInterface $response, \Exception $previous = null)
-    {
+    public function __construct(
+        ResponseInterface $response,
+        ?Exception $previous = null
+    ) {
         parent::__construct('', $response->getCode(), $previous);
 
         $this->message = sprintf('%05d: %s', $response->getCode(), $response->getComment());
         $this->response = $response;
     }
 
-    /**
-     * @return ResponseInterface
-     */
-    public function getResponse()
+    public function getResponse(): ResponseInterface
     {
         return $this->response;
     }

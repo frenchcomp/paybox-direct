@@ -11,6 +11,7 @@
 
 namespace Nexy\PayboxDirect\Bridge\Symfony\DependencyInjection;
 
+use Exception;
 use Nexy\PayboxDirect\Enum\Activity;
 use Nexy\PayboxDirect\Enum\Currency;
 use Nexy\PayboxDirect\Enum\Version;
@@ -19,6 +20,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
+use function array_key_exists;
+use function constant;
+
 /**
  * @author Sullivan Senechal <soullivaneuh@gmail.com>
  */
@@ -26,8 +30,9 @@ final class NexyPayboxDirectExtension extends Extension
 {
     /**
      * {@inheritdoc}
+     * @throws Exception
      */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
@@ -45,7 +50,7 @@ final class NexyPayboxDirectExtension extends Extension
      * @param array            $config
      * @param ContainerBuilder $container
      */
-    private function processOptions(array $config, ContainerBuilder $container)
+    private function processOptions(array $config, ContainerBuilder $container): void
     {
         // Start with client option
         $options = $config['options'];
@@ -74,7 +79,7 @@ final class NexyPayboxDirectExtension extends Extension
      * @param array            $config
      * @param ContainerBuilder $container
      */
-    private function processClient(array $config, ContainerBuilder $container)
+    private function processClient(array $config, ContainerBuilder $container): void
     {
         if (null === $config['client']) {
             return;

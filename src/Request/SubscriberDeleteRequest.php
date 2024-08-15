@@ -16,10 +16,7 @@ namespace Nexy\PayboxDirect\Request;
  */
 final class SubscriberDeleteRequest extends AbstractRequest
 {
-    /**
-     * @param string $subscriberRef
-     */
-    public function __construct($subscriberRef)
+    public function __construct(string $subscriberRef)
     {
         parent::__construct($subscriberRef);
     }
@@ -27,7 +24,7 @@ final class SubscriberDeleteRequest extends AbstractRequest
     /**
      * {@inheritdoc}
      */
-    public function getRequestType()
+    public function getRequestType(): int
     {
         return RequestInterface::SUBSCRIBER_DELETE;
     }

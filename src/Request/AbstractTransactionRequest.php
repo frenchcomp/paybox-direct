@@ -14,49 +14,38 @@ namespace Nexy\PayboxDirect\Request;
 use Greg0ire\Enum\Bridge\Symfony\Validator\Constraint\Enum;
 use Symfony\Component\Validator\Constraints as Assert;
 
+use function array_merge;
+
 /**
  * @author Sullivan Senechal <soullivaneuh@gmail.com>
  */
 abstract class AbstractTransactionRequest extends AbstractRequest
 {
     /**
-     * @var int
-     *
      * @Assert\Type("int")
      */
-    private $amount;
+    private int $amount;
 
     /**
-     * @var int|null
-     *
      * @Enum(class="Nexy\PayboxDirect\Enum\Currency", showKeys=true)
      */
-    private $currency = null;
+    private ?int $currency = null;
 
-    /**
-     * @param int         $amount
-     * @param string|null $subscriberRef
-     */
-    public function __construct($amount, $subscriberRef = null)
+    public function __construct(int $amount, string $subscriberRef = null)
     {
         parent::__construct($subscriberRef);
 
         $this->amount = $amount;
     }
 
-    /**
-     * @param int $currency
-     *
-     * @return $this
-     */
-    final public function setCurrency($currency = null)
+    final public function setCurrency(int $currency = null): self
     {
         $this->currency = $currency;
 
         return $this;
     }
 
-    public function getParameters()
+    public function getParameters(): array
     {
         $parameters = [
             'MONTANT' => $this->amount,

@@ -19,7 +19,7 @@ final class CancelRequest extends AbstractNumberedReferencedTransactionRequest
     /**
      * {@inheritdoc}
      */
-    public function getRequestType()
+    public function getRequestType(): int
     {
         return RequestInterface::CANCEL;
     }

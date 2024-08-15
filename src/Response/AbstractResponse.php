@@ -11,75 +11,52 @@
 
 namespace Nexy\PayboxDirect\Response;
 
+use function array_key_exists;
+use function array_map;
+use function in_array;
+
 /**
  * @author Sullivan Senechal <soullivaneuh@gmail.com>
  */
 abstract class AbstractResponse implements ResponseInterface
 {
-    /**
-     * @var int
-     */
-    private $code;
+    private int $code;
 
-    /**
-     * @var string
-     */
-    private $comment;
+    private string $comment;
 
-    /**
-     * @var string
-     */
-    private $site;
+    private string $site;
 
-    /**
-     * @var string
-     */
-    private $rank;
+    private string $rank;
 
-    /**
-     * @var int
-     */
-    private $callNumber;
+    private int $callNumber;
 
-    /**
-     * @var int
-     */
-    private $questionNumber;
+    private int $questionNumber;
 
-    /**
-     * @var int
-     */
-    private $transactionNumber;
+    private int $transactionNumber;
 
     /**
      * @var string|null|false
      */
-    private $authorization = null;
+    private $authorization;
 
     /**
      * @var string|null|false
      */
-    private $country = null;
+    private $country;
 
     /**
      * @var string|null|false
      */
-    private $sha1 = null;
+    private $sha1;
 
     /**
      * @var string|null|false
      */
-    private $cardType = null;
+    private $cardType;
 
-    /**
-     * @var array
-     */
-    private $content = [];
+    private array $content;
 
-    /**
-     * @var mixed[]
-     */
-    protected $filteredParameters;
+    protected array $filteredParameters;
 
     /**
      * @param string[] $parameters
@@ -88,21 +65,24 @@ abstract class AbstractResponse implements ResponseInterface
     {
         $this->content = $parameters;
         // Cleanup array to set false for empty/invalid values.
-        $this->filteredParameters = array_map(function ($value) {
-            if (in_array($value, ['', '???'], true)) {
-                return false;
-            }
+        $this->filteredParameters = array_map(
+            static function ($value) {
+                if (in_array($value, ['', '???'], true)) {
+                    return false;
+                }
 
-            return $value;
-        }, $parameters);
+                return $value;
+            },
+            $parameters
+        );
 
-        $this->code = intval($this->filteredParameters['CODEREPONSE']);
+        $this->code = (int) $this->filteredParameters['CODEREPONSE'];
         $this->comment = $this->filteredParameters['COMMENTAIRE'];
         $this->site = $this->filteredParameters['SITE'];
         $this->rank = $this->filteredParameters['RANG'];
-        $this->callNumber = intval($this->filteredParameters['NUMAPPEL']);
-        $this->questionNumber = intval($this->filteredParameters['NUMQUESTION']);
-        $this->transactionNumber = intval($this->filteredParameters['NUMTRANS']);
+        $this->callNumber = (int) $this->filteredParameters['NUMAPPEL'];
+        $this->questionNumber = (int) $this->filteredParameters['NUMQUESTION'];
+        $this->transactionNumber = (int) $this->filteredParameters['NUMTRANS'];
 
         if (array_key_exists('AUTORISATION', $this->filteredParameters)) {
             $this->authorization = $this->filteredParameters['AUTORISATION'];
@@ -121,7 +101,7 @@ abstract class AbstractResponse implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    final public function isSuccessful()
+    final public function isSuccessful(): bool
     {
         return 0 === $this->code;
     }
@@ -129,7 +109,7 @@ abstract class AbstractResponse implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    final public function getCode()
+    final public function getCode(): int
     {
         return $this->code;
     }
@@ -137,7 +117,7 @@ abstract class AbstractResponse implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    final public function getComment()
+    final public function getComment(): string
     {
         return $this->comment;
     }
@@ -145,7 +125,7 @@ abstract class AbstractResponse implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    final public function getSite()
+    final public function getSite(): string
     {
         return $this->site;
     }
@@ -153,7 +133,7 @@ abstract class AbstractResponse implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    final public function getRank()
+    final public function getRank(): string
     {
         return $this->rank;
     }
@@ -161,7 +141,7 @@ abstract class AbstractResponse implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    final public function getCallNumber()
+    final public function getCallNumber(): int
     {
         return $this->callNumber;
     }
@@ -169,7 +149,7 @@ abstract class AbstractResponse implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    final public function getQuestionNumber()
+    final public function getQuestionNumber(): int
     {
         return $this->questionNumber;
     }
@@ -177,7 +157,7 @@ abstract class AbstractResponse implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    final public function getTransactionNumber()
+    final public function getTransactionNumber(): int
     {
         return $this->transactionNumber;
     }
@@ -217,7 +197,7 @@ abstract class AbstractResponse implements ResponseInterface
     /**
      * {@inheritdoc}
      */
-    final public function getContent()
+    final public function getContent(): array
     {
         return $this->content;
     }

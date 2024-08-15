@@ -18,59 +18,43 @@ interface ResponseInterface
 {
     /**
      * Tells if response is successful based on `CODEREPONSE` parameter.
-     *
-     * @return bool
      */
-    public function isSuccessful();
+    public function isSuccessful(): bool;
 
     /**
      * Corresponding to `CODEREPONSE`.
-     *
-     * @return int
      */
-    public function getCode();
+    public function getCode(): int;
 
     /**
      * Corresponding to `COMMENTAIRE`.
-     *
-     * @return string
      */
-    public function getComment();
+    public function getComment(): string;
 
     /**
      * Corresponding to `SITE`.
-     *
-     * @return string
      */
-    public function getSite();
+    public function getSite(): string;
 
     /**
      * Corresponding to `RANG`.
-     *
-     * @return string
      */
-    public function getRank();
+    public function getRank(): string;
 
     /**
      * Corresponding to `NUMAPPEL`.
-     *
-     * @return int
      */
-    public function getCallNumber();
+    public function getCallNumber(): int;
 
     /**
      * Corresponding to `NUMQUESTION`.
-     *
-     * @return int
      */
-    public function getQuestionNumber();
+    public function getQuestionNumber(): int;
 
     /**
      * Corresponding to `NUMTRANS`.
-     *
-     * @return int
      */
-    public function getTransactionNumber();
+    public function getTransactionNumber(): int;
 
     /**
      * Corresponding to `AUTORISATION`.
@@ -102,8 +86,6 @@ interface ResponseInterface
 
     /**
      * Get response content
-     *
-     * @return array
      */
-    public function getContent();
+    public function getContent(): array;
 }

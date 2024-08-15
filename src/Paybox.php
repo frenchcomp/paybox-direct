@@ -12,10 +12,13 @@
 namespace Nexy\PayboxDirect;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use Exception;
+use InvalidArgumentException;
 use Nexy\PayboxDirect\Enum\Activity;
 use Nexy\PayboxDirect\Enum\Currency;
 use Nexy\PayboxDirect\Enum\Version;
 use Nexy\PayboxDirect\Exception\InvalidRequestPropertiesException;
+use Nexy\PayboxDirect\Exception\PayboxException;
 use Nexy\PayboxDirect\HttpClient\AbstractHttpClient;
 use Nexy\PayboxDirect\HttpClient\GuzzleHttpClient;
 use Nexy\PayboxDirect\Request\InquiryRequest;
@@ -24,6 +27,7 @@ use Nexy\PayboxDirect\Response\DirectPlusResponse;
 use Nexy\PayboxDirect\Response\DirectResponse;
 use Nexy\PayboxDirect\Response\InquiryResponse;
 use Nexy\PayboxDirect\Response\ResponseInterface;
+use RuntimeException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -36,32 +40,23 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 class Paybox
 {
-    const API_URL_PRODUCTION = 'https://ppps.paybox.com/PPPS.php';
+    public const API_URL_PRODUCTION = 'https://ppps.paybox.com/PPPS.php';
 
-    const API_URL_RESCUE = 'https://ppps1.paybox.com/PPPS.php';
+    public const API_URL_RESCUE = 'https://ppps1.paybox.com/PPPS.php';
 
-    const API_URL_TEST = 'https://preprod-ppps.paybox.com/PPPS.php';
+    public const API_URL_TEST = 'https://preprod-ppps.paybox.com/PPPS.php';
 
-    const URL_3DS_PRODUCTION = 'https://tpeweb.paybox.com/cgi/RemoteMPI.cgi';
-    const URL_3DS_RESCUE = 'https://tpeweb1.paybox.com/cgi/RemoteMPI.cgi';
-    const URL_3DS_TEST = 'https://preprod-tpeweb.paybox.com/cgi/RemoteMPI.cgi';
+    public const URL_3DS_PRODUCTION = 'https://tpeweb.paybox.com/cgi/RemoteMPI.cgi';
+    public const URL_3DS_RESCUE = 'https://tpeweb1.paybox.com/cgi/RemoteMPI.cgi';
+    public const URL_3DS_TEST = 'https://preprod-tpeweb.paybox.com/cgi/RemoteMPI.cgi';
 
-    const INVALID_CREDENTIALS_MESSAGE = 'Paybox SDK: invalid change of credentials';
+    public const INVALID_CREDENTIALS_MESSAGE = 'Paybox SDK: invalid change of credentials';
 
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
+    private ValidatorInterface $validator;
 
-    /**
-     * @var AbstractHttpClient
-     */
-    private $httpClient;
+    private AbstractHttpClient $httpClient;
 
-    /**
-     * @var array
-     */
-    private $options;
+    private array $options;
 
     public function __construct(array $options = [], AbstractHttpClient $httpClient = null)
     {
@@ -75,68 +70,51 @@ class Paybox
             ->enableAnnotationMapping()
             ->getValidator();
 
-        $this->httpClient = $httpClient ? $httpClient : new GuzzleHttpClient();
+        $this->httpClient = $httpClient ?: new GuzzleHttpClient();
         $this->httpClient->setOptions($this->options);
         $this->httpClient->init();
     }
 
-    /**
-     * @param RequestInterface $request
-     *
-     * @return DirectResponse
-     */
-    public function sendDirectRequest(RequestInterface $request)
+    public function sendDirectRequest(RequestInterface $request): ResponseInterface
     {
         if ($request->getRequestType() >= RequestInterface::SUBSCRIBER_AUTHORIZE) {
-            throw new \InvalidArgumentException(
-                'Direct Plus requests must be passed onto '.__CLASS__.'::sendDirectPlusRequest method.'
+            throw new InvalidArgumentException(
+                'Direct Plus requests must be passed onto ' . static::class . '::sendDirectPlusRequest method.'
             );
         }
         if ($request instanceof InquiryRequest) {
-            throw new \InvalidArgumentException(
-                'Inquiry requests must be passed onto '.__CLASS__.'::sendInquiryRequest method.'
+            throw new InvalidArgumentException(
+                'Inquiry requests must be passed onto ' . static::class . '::sendInquiryRequest method.'
             );
         }
 
         return $this->request($request);
     }
 
-    /**
-     * @param RequestInterface $request
-     *
-     * @return DirectPlusResponse
-     */
-    public function sendDirectPlusRequest(RequestInterface $request)
+    public function sendDirectPlusRequest(RequestInterface $request): ResponseInterface
     {
         if ($request->getRequestType() < RequestInterface::SUBSCRIBER_AUTHORIZE) {
-            throw new \InvalidArgumentException(
-                'Direct requests must be passed onto '.__CLASS__.'::sendDirectRequest method.'
+            throw new InvalidArgumentException(
+                'Direct requests must be passed onto ' . static::class . '::sendDirectRequest method.'
             );
         }
 
         return $this->request($request, DirectPlusResponse::class);
     }
 
-    /**
-     * @param InquiryRequest $request
-     *
-     * @return InquiryResponse
-     */
-    public function sendInquiryRequest(InquiryRequest $request)
+    public function sendInquiryRequest(InquiryRequest $request): ResponseInterface
     {
         return $this->request($request, InquiryResponse::class);
     }
 
-    /**
-     * @param RequestInterface $request
-     * @param string           $responseClass
-     *
-     * @return ResponseInterface
-     *
-     * @throws Exception\InvalidRequestPropertiesException
-     * @throws Exception\PayboxException
+    /**     *
+     * @throws InvalidRequestPropertiesException
+     * @throws PayboxException
      */
-    private function request(RequestInterface $request, $responseClass = DirectResponse::class)
+    private function request(
+        RequestInterface $request,
+        string $responseClass = DirectResponse::class
+    ): ResponseInterface
     {
         $errors = $this->validator->validate($request);
         if ($errors->count() > 0) {
@@ -147,20 +125,20 @@ class Paybox
     }
 
     /**
-     * Paybox base options validation.
-     *
-     * @param OptionsResolver $resolver
+     * Paybox base options validation
      */
-    private function configureOptions(OptionsResolver $resolver)
+    private function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'timeout' => 10,
             'production' => false,
             'paybox_default_currency' => Currency::EURO,
         ]);
+
         $resolver->setDefined([
             'paybox_default_activity',
         ]);
+
         $resolver->setRequired([
             'paybox_version', // Paybox Direct Plus protocol
             'paybox_site',
@@ -183,28 +161,29 @@ class Paybox
     }
 
     /**
-     * @param string      $site
-     * @param string      $rank
-     * @param string      $identifier
-     * @param string      $key
-     * @param string|null $version
-     * @return void
-     * @throws \Exception
+     * @throws Exception
      */
-    public function setCredentials($site, $rank, $identifier, $key, $version = null)
+    public function setCredentials(
+        ?string $site,
+        ?string $rank,
+        ?string $identifier,
+        ?string $key,
+        ?string $version = null
+    ): void
     {
-        if (!isset($site) || !isset($rank) || !isset($identifier) || !isset($key)) {
-            throw new \Exception(self::INVALID_CREDENTIALS_MESSAGE);
+        if (empty($site) || empty($rank) || empty($identifier) || empty($key)) {
+            throw new Exception(self::INVALID_CREDENTIALS_MESSAGE);
         }
         $this->options['paybox_site'] = $site;
         $this->options['paybox_rank'] = $rank;
         $this->options['paybox_identifier'] = $identifier;
         $this->options['paybox_key'] = $key;
-        if (isset($version)) {
+
+        if (!empty($version)) {
             $version = strtoupper($version);
             $allowedVersions = Version::getConstants();
-            if (!isset($allowedVersions[$version])) {
-                throw new \Exception(self::INVALID_CREDENTIALS_MESSAGE);
+            if (empty($allowedVersions[$version])) {
+                throw new RuntimeException(self::INVALID_CREDENTIALS_MESSAGE);
             }
             $this->options['paybox_version'] = $allowedVersions[$version];
         }
@@ -214,11 +193,8 @@ class Paybox
 
     /**
      * Get parameters that have been set for passed request object
-     *
-     * @param RequestInterface $request
-     * @return array
      */
-    public function getParametersSet(RequestInterface $request)
+    public function getParametersSet(RequestInterface $request): array
     {
         return $this->httpClient->getParameters($request->getRequestType(), $request->getParameters());
     }
@@ -228,8 +204,12 @@ class Paybox
      *
      * @return string
      */
-    public function get3dsUrl()
+    public function get3dsUrl(): string
     {
-        return true === $this->options['production'] ? self::URL_3DS_PRODUCTION : self::URL_3DS_TEST;
+        if (true === $this->options['production']) {
+            return self::URL_3DS_PRODUCTION;
+        }
+
+        return self::URL_3DS_TEST;
     }
 }

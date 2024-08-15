@@ -18,26 +18,25 @@ use GuzzleHttp\Client;
  */
 final class GuzzleHttpClient extends AbstractHttpClient
 {
-    /**
-     * @var Client
-     */
-    private $client;
+    private Client $client;
 
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
-        $this->client = new Client([
-            'base_uri' => $this->baseUrl,
-            'timeout' => $this->timeout,
-        ]);
+        $this->client = new Client(
+            [
+                'base_uri' => $this->baseUrl,
+                'timeout' => $this->timeout,
+            ]
+        );
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function request($parameters)
+    protected function request(array $parameters): string
     {
         $response = $this->client->post('', [
             'form_params' => $parameters,

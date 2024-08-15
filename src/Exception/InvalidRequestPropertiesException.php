@@ -11,38 +11,30 @@
 
 namespace Nexy\PayboxDirect\Exception;
 
+use Exception;
+use LogicException;
 use Nexy\PayboxDirect\Request\RequestInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
  * @author Sullivan Senechal <soullivaneuh@gmail.com>
  */
-final class InvalidRequestPropertiesException extends \LogicException
+final class InvalidRequestPropertiesException extends LogicException
 {
-    /**
-     * @var ConstraintViolationListInterface
-     */
-    private $errors;
+    private ConstraintViolationListInterface $errors;
 
-    /**
-     * InvalidRequestPropertiesException constructor.
-     *
-     * @param RequestInterface                 $request
-     * @param ConstraintViolationListInterface $errors
-     * @param \Exception                       $previous
-     */
-    public function __construct(RequestInterface $request, ConstraintViolationListInterface $errors, \Exception $previous = null)
-    {
+    public function __construct(
+        RequestInterface $request,
+        ConstraintViolationListInterface $errors,
+        ?Exception $previous = null
+    ) {
         parent::__construct('', 0, $previous);
 
-        $this->message = PHP_EOL.(string) $errors;
+        $this->message = PHP_EOL . $errors;
         $this->errors = $errors;
     }
 
-    /**
-     * @return ConstraintViolationListInterface
-     */
-    public function getErrors()
+    public function getErrors(): ConstraintViolationListInterface
     {
         return $this->errors;
     }

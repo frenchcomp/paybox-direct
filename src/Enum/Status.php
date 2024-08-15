@@ -18,19 +18,19 @@ use Greg0ire\Enum\AbstractEnum;
  */
 final class Status extends AbstractEnum
 {
-    const REFUNDED = 'Remboursé';
+    public const REFUNDED = 'Remboursé';
 
-    const CANCELED = 'Annulé';
+    public const CANCELED = 'Annulé';
 
-    const AUTHORIZED = 'Autorisé';
+    public const AUTHORIZED = 'Autorisé';
 
-    const CAPTURED = 'Capturé';
+    public const CAPTURED = 'Capturé';
 
-    const CREDIT = 'Crédit';
+    public const CREDIT = 'Crédit';
 
-    const REFUSED = 'Refusé';
+    public const REFUSED = 'Refusé';
 
-    const BALANCE_INQUIRY = 'Demande de solde (Carte cadeaux)';
+    public const BALANCE_INQUIRY = 'Demande de solde (Carte cadeaux)';
 
-    const SUPPORT_REJECTION = 'Rejet support';
+    public const SUPPORT_REJECTION = 'Rejet support';
 }

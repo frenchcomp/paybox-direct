@@ -11,6 +11,8 @@
 
 namespace Nexy\PayboxDirect\Request;
 
+use function array_merge;
+
 /**
  * Requests with card numbers or reference.
  *
@@ -20,15 +22,14 @@ abstract class AbstractReferencedBearerTransactionRequest extends AbstractRefere
 {
     use BearerRequestTrait;
 
-    /**
-     * @param string      $reference
-     * @param int         $amount
-     * @param string      $bearer
-     * @param string      $validityDate
-     * @param string|null $subscriberRef
-     */
-    public function __construct($reference, $amount, $bearer, $validityDate, $subscriberRef = null)
-    {
+
+    public function __construct(
+        string $reference,
+        int $amount,
+        string $bearer,
+        string $validityDate,
+        string $subscriberRef = null
+    ) {
         parent::__construct($reference, $amount, $subscriberRef);
 
         $this->bearer = $bearer;
@@ -38,7 +39,7 @@ abstract class AbstractReferencedBearerTransactionRequest extends AbstractRefere
     /**
      * {@inheritdoc}
      */
-    public function getParameters()
+    public function getParameters(): array
     {
         return array_merge(parent::getParameters(), $this->getBearerParameters());
     }

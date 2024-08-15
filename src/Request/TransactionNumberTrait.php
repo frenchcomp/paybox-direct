@@ -19,17 +19,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 trait TransactionNumberTrait
 {
     /**
-     * @var int
-     *
      * @Assert\Type("int")
      * @Assert\Length(max=10)
      */
-    private $transactionNumber;
+    private int $transactionNumber;
 
-    /**
-     * @return int
-     */
-    final protected function getTransactionNumber()
+    final protected function getTransactionNumber(): int
     {
         return $this->transactionNumber;
     }

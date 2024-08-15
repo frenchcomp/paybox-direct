@@ -11,15 +11,14 @@
 
 namespace Nexy\PayboxDirect\Response;
 
+use RuntimeException;
+
 /**
  * @author Sullivan Senechal <soullivaneuh@gmail.com>
  */
 final class DirectPlusResponse extends AbstractResponse
 {
-    /**
-     * @var string
-     */
-    private $subscriberRef;
+    private string $subscriberRef;
 
     /**
      * @var string|false false if empty
@@ -34,25 +33,19 @@ final class DirectPlusResponse extends AbstractResponse
         parent::__construct($parameters);
 
         if (!isset($this->filteredParameters['REFABONNE'])) {
-            throw new \RuntimeException('Undefined index REFABONNE', 1);
+            throw new RuntimeException('Undefined index REFABONNE', 1);
         }
 
         $this->subscriberRef = $this->filteredParameters['REFABONNE'];
         $this->bearer = $this->filteredParameters['PORTEUR'];
     }
 
-    /**
-     * @return string
-     */
-    public function getSubscriberRef()
+    public function getSubscriberRef(): string
     {
         return $this->subscriberRef;
     }
 
-    /**
-     * @return string
-     */
-    public function getBearer()
+    public function getBearer(): string
     {
         return $this->bearer;
     }

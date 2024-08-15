@@ -13,32 +13,30 @@ namespace Nexy\PayboxDirect\Request;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
+use function array_merge;
+
 /**
  * @author Sullivan Senechal <soullivaneuh@gmail.com>
  */
 abstract class AbstractReferencedTransactionRequest extends AbstractTransactionRequest
 {
     /**
-     * @var string
-     *
      * @Assert\Type("string")
      * @Assert\Length(min=1, max=250)
      */
-    private $reference;
+    private string $reference;
 
-    /**
-     * @param string      $reference
-     * @param int         $amount
-     * @param string|null $subscriberRef
-     */
-    public function __construct($reference, $amount, $subscriberRef = null)
-    {
+    public function __construct(
+        string $reference,
+        int $amount,
+        string $subscriberRef = null
+    ) {
         parent::__construct($amount, $subscriberRef);
 
         $this->reference = $reference;
     }
 
-    public function getParameters()
+    public function getParameters(): array
     {
         $parameters = [
             'REFERENCE' => $this->reference,

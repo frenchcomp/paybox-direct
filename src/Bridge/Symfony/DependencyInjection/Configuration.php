@@ -27,12 +27,14 @@ final class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder('nexy_paybox_direct');
-        $rootNode = $treeBuilder->getRootNode();
+        $treeBuilder = new TreeBuilder();
+        $rootNode = $treeBuilder->root('nexy_paybox_direct');
 
         $rootNode
             ->children()
-                ->scalarNode('client')->defaultNull()->end()
+                ->scalarNode('client')
+                    ->defaultNull()
+                ->end()
                 ->arrayNode('options')
                     ->addDefaultsIfNotSet()
                     ->children()

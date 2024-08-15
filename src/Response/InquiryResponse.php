@@ -11,6 +11,8 @@
 
 namespace Nexy\PayboxDirect\Response;
 
+use function array_key_exists;
+
 /**
  * Special response for inquiry request.
  *
@@ -18,20 +20,15 @@ namespace Nexy\PayboxDirect\Response;
  */
 final class InquiryResponse extends AbstractResponse
 {
-    /**
-     * @var string
-     */
-    private $status;
+    private string $status;
 
-    /**
-     * @var string|null
-     */
-    private $discount = null;
+
+    private ?string $discount = null;
 
     /**
      * {@inheritdoc}
      */
-    public function __construct($parameters)
+    public function __construct(array $parameters)
     {
         parent::__construct($parameters);
 
@@ -42,18 +39,12 @@ final class InquiryResponse extends AbstractResponse
         }
     }
 
-    /**
-     * @return string
-     */
-    public function getStatus()
+    public function getStatus(): string
     {
         return $this->status;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getDiscount()
+    public function getDiscount(): ?string
     {
         return $this->discount;
     }

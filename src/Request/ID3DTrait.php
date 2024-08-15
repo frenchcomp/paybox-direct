@@ -10,31 +10,21 @@ use Symfony\Component\Validator\Constraints as Assert;
 trait ID3DTrait
 {
     /**
-     * @var string|null
-     *
      * @Assert\Length(min=1, max=20)
      */
-    private $id3d = null;
+    private ?string $id3d = null;
 
-    /**
-     * @param string|null $id3d
-     *
-     * @return $this
-     */
-    final public function setID3D($id3d = null)
+    final public function setID3D(string $id3d = null): self
     {
         $this->id3d = $id3d;
 
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    private function getID3DParameters()
+    private function getID3DParameters(): array
     {
         $parameters = [];
-        if ($this->id3d !== null) {
+        if (null !== $this->id3d) {
             $parameters['ID3D'] = $this->id3d;
         }
 

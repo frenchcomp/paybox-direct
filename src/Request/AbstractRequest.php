@@ -11,8 +11,11 @@
 
 namespace Nexy\PayboxDirect\Request;
 
+use DateTime;
 use Greg0ire\Enum\Bridge\Symfony\Validator\Constraint\Enum;
 use Symfony\Component\Validator\Constraints as Assert;
+
+use function method_exists;
 
 /**
  * @author Sullivan Senechal <soullivaneuh@gmail.com>
@@ -20,140 +23,94 @@ use Symfony\Component\Validator\Constraints as Assert;
 abstract class AbstractRequest implements RequestInterface
 {
     /**
-     * @var int
-     *
      * @Enum(class="Nexy\PayboxDirect\Enum\Activity", showKeys=true)
      */
-    private $activity = null;
+    private ?int $activity = null;
 
     /**
-     * @var \DateTime
-     *
      * @Assert\Type("\DateTime")
      */
-    private $date = null;
+    private ?DateTime $date = null;
 
     /**
-     * @var bool
-     *
      * @Assert\Type("bool")
      */
-    private $showCountry = false;
+    private bool $showCountry = false;
 
     /**
-     * @var bool
-     *
      * @Assert\Type("bool")
      */
-    private $showSha1 = false;
+    private bool $showSha1 = false;
 
     /**
-     * @var bool
-     *
      * @Assert\Type("bool")
      */
-    private $showCardType = false;
+    private bool $showCardType = false;
 
     /**
-     * @var string|null
-     *
      * @Assert\Type("string")
      * @Assert\Length(min=1, max=250)
      */
-    private $subscriberRef = null;
+    private ?string $subscriberRef = null;
 
-    /**
-     * @param null|string $subscriberRef
-     */
-    public function __construct($subscriberRef = null)
+    public function __construct(string $subscriberRef = null)
     {
         $this->subscriberRef = $subscriberRef;
     }
 
-    /**
-     * @param int $activity
-     *
-     * @return $this
-     */
-    final public function setActivity($activity)
+    final public function setActivity(int $activity): self
     {
         $this->activity = $activity;
 
         return $this;
     }
 
-    /**
-     * @param \DateTime|null $date
-     *
-     * @return $this
-     */
-    final public function setDate(\DateTime $date = null)
+    final public function setDate(DateTime $date = null): self
     {
         $this->date = $date;
 
         return $this;
     }
 
-    /**
-     * @param bool $showCountry
-     *
-     * @return $this
-     */
-    final public function setShowCountry($showCountry)
+    final public function setShowCountry(bool $showCountry): self
     {
         $this->showCountry = $showCountry;
 
         return $this;
     }
 
-    /**
-     * @param bool $showSha1
-     *
-     * @return $this
-     */
-    final public function setShowSha1($showSha1)
+
+    final public function setShowSha1(bool $showSha1): self
     {
         $this->showSha1 = $showSha1;
 
         return $this;
     }
 
-    /**
-     * @param bool $showCardType
-     *
-     * @return $this
-     */
-    final public function setShowCardType($showCardType)
+    final public function setShowCardType(bool $showCardType): self
     {
         $this->showCardType = $showCardType;
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    final protected function hasSubscriberRef()
+    final protected function hasSubscriberRef(): bool
     {
         return !empty($this->subscriberRef);
     }
 
-    /**
-     * @return null|string
-     */
-    final protected function getSubscriberRef()
+    final protected function getSubscriberRef(): ?string
     {
         return $this->subscriberRef;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getParameters()
+    public function getParameters(): array
     {
-        $parameters = [
-            'DATEQ' => $this->date instanceof \DateTime ? $this->date->format('dmYHis') : null,
-        ];
+        $parameters = ['DATEQ' => null];
+
+        if ($this->date instanceof DateTime) {
+            $parameters['DATEQ'] = $this->date->format('dmYHis');
+        }
 
         if ($this->activity) {
             $parameters['ACTIVITE'] = $this->activity;
@@ -174,7 +131,11 @@ abstract class AbstractRequest implements RequestInterface
         if (method_exists($this, 'getCallNumber')) {
             $parameters['NUMAPPEL'] = $this->getCallNumber();
         }
-        if (method_exists($this, 'hasAuthorization') && $this->hasAuthorization()) {
+        if (
+            method_exists($this, 'getAuthorization')
+            && method_exists($this, 'hasAuthorization')
+            && $this->hasAuthorization()
+        ) {
             $parameters['AUTORISATION'] = $this->getAuthorization();
         }
 

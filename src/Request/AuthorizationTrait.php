@@ -19,36 +19,23 @@ use Symfony\Component\Validator\Constraints as Assert;
 trait AuthorizationTrait
 {
     /**
-     * @var string|null
-     *
      * @Assert\Length(min=1, max=10)
      */
-    private $authorization = null;
+    private ?string $authorization = null;
 
-    /**
-     * @param string|null $authorization
-     *
-     * @return $this
-     */
-    final public function setAuthorization($authorization = null)
+    final public function setAuthorization(string $authorization = null): self
     {
         $this->authorization = $authorization;
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    final protected function hasAuthorization()
+    final protected function hasAuthorization(): bool
     {
         return !empty($this->authorization);
     }
 
-    /**
-     * @return string|null
-     */
-    final protected function getAuthorization()
+    final protected function getAuthorization(): ?string
     {
         return $this->authorization;
     }

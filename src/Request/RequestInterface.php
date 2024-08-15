@@ -16,57 +16,53 @@ namespace Nexy\PayboxDirect\Request;
  */
 interface RequestInterface
 {
-    const AUTHORIZE = 1;
+    public const AUTHORIZE = 1;
 
-    const DEBIT = 2;
+    public const DEBIT = 2;
 
-    const AUTHORIZE_AND_CAPTURE = 3;
+    public const AUTHORIZE_AND_CAPTURE = 3;
 
-    const CREDIT = 4;
+    public const CREDIT = 4;
 
-    const CANCEL = 5;
+    public const CANCEL = 5;
 
-    const CHECK = 11;
+    public const CHECK = 11;
 
-    const TRANSACT = 12;
+    public const TRANSACT = 12;
 
-    const UPDATE_AMOUNT = 13;
+    public const UPDATE_AMOUNT = 13;
 
-    const REFUND = 14;
+    public const REFUND = 14;
 
-    const INQUIRY = 17;
+    public const INQUIRY = 17;
 
-    const SUBSCRIBER_AUTHORIZE = 51;
+    public const SUBSCRIBER_AUTHORIZE = 51;
 
-    const SUBSCRIBER_DEBIT = 52;
+    public const SUBSCRIBER_DEBIT = 52;
 
-    const SUBSCRIBER_AUTHORIZE_AND_CAPTURE = 53;
+    public const SUBSCRIBER_AUTHORIZE_AND_CAPTURE = 53;
 
-    const SUBSCRIBER_CREDIT = 54;
+    public const SUBSCRIBER_CREDIT = 54;
 
-    const SUBSCRIBER_CANCEL_TRANSACTION = 55;
+    public const SUBSCRIBER_CANCEL_TRANSACTION = 55;
 
-    const SUBSCRIBER_REGISTER = 56;
+    public const SUBSCRIBER_REGISTER = 56;
 
-    const SUBSCRIBER_UPDATE = 57;
+    public const SUBSCRIBER_UPDATE = 57;
 
-    const SUBSCRIBER_DELETE = 58;
+    public const SUBSCRIBER_DELETE = 58;
 
-    const SUBSCRIBER_TRANSACT = 61;
+    public const SUBSCRIBER_TRANSACT = 61;
 
     /**
      * Returns the request type.
      *
      * Corresponds to the TYPE parameters of PayBox.
-     *
-     * @return int
      */
-    public function getRequestType();
+    public function getRequestType(): int;
 
     /**
      * Returns Paybox formatted parameters array.
-     *
-     * @return array
      */
-    public function getParameters();
+    public function getParameters(): array;
 }

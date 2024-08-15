@@ -19,17 +19,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 trait CallNumberTrait
 {
     /**
-     * @var int
-     *
      * @Assert\Type("int")
      * @Assert\Length(max=10)
      */
-    private $callNumber;
+    private int $callNumber;
 
-    /**
-     * @return int
-     */
-    final protected function getCallNumber()
+    final protected function getCallNumber(): int
     {
         return $this->callNumber;
     }
