@@ -151,8 +151,9 @@ abstract class AbstractHttpClient
 
     /**
      * Generate results array from HTTP response body
+     * @todo must be private and static
      */
-    private function parseHttpResponse(string $response): array
+    public static function parseHttpResponse(string $response): array
     {
         parse_str($response, $results);
         foreach ($results as &$value) {
