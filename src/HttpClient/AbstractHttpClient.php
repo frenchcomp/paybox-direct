@@ -27,7 +27,6 @@ use function str_pad;
 use function trim;
 use function utf8_encode;
 
-use const PHP_INT_MAX;
 use const STR_PAD_LEFT;
 
 /**
@@ -54,7 +53,7 @@ abstract class AbstractHttpClient
 
     final public function __construct()
     {
-        $this->questionNumber = random_int(0, PHP_INT_MAX);
+        $this->questionNumber = random_int(1, '2147483647');
     }
 
     /**
@@ -97,7 +96,7 @@ abstract class AbstractHttpClient
      */
     final public function call(int $type, array $parameters, string $responseClass): ResponseInterface
     {
-        if (!is_a($responseClass, ResponseInterface::class)) {
+        if (!is_a($responseClass, ResponseInterface::class, true)) {
             throw new InvalidArgumentException('The response class must implement ' . ResponseInterface::class . '.');
         }
 
@@ -105,7 +104,7 @@ abstract class AbstractHttpClient
         $bodyParams['DATEQ'] = $parameters['DATEQ'] ?? date('dmYHis');
 
         $response = $this->request($bodyParams);
-        $results = $this->parseHttpResponse($response);
+        $results = self::parseHttpResponse($response);
 
         $this->questionNumber = (int) $results['NUMQUESTION'] + 1;
 

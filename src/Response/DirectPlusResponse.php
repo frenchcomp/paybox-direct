@@ -32,12 +32,13 @@ final class DirectPlusResponse extends AbstractResponse
     {
         parent::__construct($parameters);
 
-        if (!isset($this->filteredParameters['REFABONNE'])) {
-            throw new RuntimeException('Undefined index REFABONNE', 1);
+        if (isset($this->filteredParameters['REFABONNE'])) {
+            $this->subscriberRef = $this->filteredParameters['REFABONNE'];
         }
 
-        $this->subscriberRef = $this->filteredParameters['REFABONNE'];
-        $this->bearer = $this->filteredParameters['PORTEUR'];
+        if (isset($this->filteredParameters['REFABONNE'])) {
+            $this->bearer = $this->filteredParameters['PORTEUR'];
+        }
     }
 
     public function getSubscriberRef(): string

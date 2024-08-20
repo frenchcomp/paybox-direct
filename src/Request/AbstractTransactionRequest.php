@@ -24,14 +24,14 @@ abstract class AbstractTransactionRequest extends AbstractRequest
     /**
      * @Assert\Type("int")
      */
-    private int $amount;
+    private ?int $amount;
 
     /**
      * @Enum(class="Nexy\PayboxDirect\Enum\Currency", showKeys=true)
      */
     private ?int $currency = null;
 
-    public function __construct(int $amount, string $subscriberRef = null)
+    public function __construct(?int $amount, string $subscriberRef = null)
     {
         parent::__construct($subscriberRef);
 
