@@ -18,6 +18,8 @@ use Greg0ire\Enum\AbstractEnum;
  */
 final class Status extends AbstractEnum
 {
+    public const NOT_FOUND = 'Transaction non trouvée';
+
     public const REFUNDED = 'Remboursé';
 
     public const CANCELED = 'Annulé';

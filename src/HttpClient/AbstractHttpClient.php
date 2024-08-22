@@ -18,12 +18,14 @@ use Nexy\PayboxDirect\Response\ResponseInterface;
 
 use function array_key_exists;
 use function array_merge;
+use function extension_loaded;
+use function function_exists;
+use function iconv;
 use function is_a;
+use function mb_convert_encoding;
 use function parse_str;
 use function random_int;
-
 use function str_pad;
-
 use function trim;
 use function utf8_encode;
 
@@ -156,10 +158,23 @@ abstract class AbstractHttpClient
     {
         parse_str($response, $results);
         foreach ($results as &$value) {
-            $value = utf8_encode(trim($value));
+            $value = self::utf8_encode(trim($value));
         }
 
         return $results;
+    }
+
+    private static function utf8_encode(string $value): string
+    {
+        if (function_exists('mb_convert_encoding') && extension_loaded('mbstring')) {
+            return mb_convert_encoding($value, 'UTF-8', 'ISO-8859-1');
+        }
+        if (function_exists('iconv') && extension_loaded('iconv')) {
+            return iconv('ISO-8859-1', 'UTF-8', $value);
+        }
+
+        // @deprecated utf8_encode since PHP 8.2
+        return utf8_encode($value);
     }
 
     /**

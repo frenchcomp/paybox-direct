@@ -11,6 +11,8 @@
 
 namespace Nexy\PayboxDirect\Response;
 
+use Nexy\PayboxDirect\Enum\Status;
+
 use function array_key_exists;
 
 /**
@@ -32,7 +34,11 @@ final class InquiryResponse extends AbstractResponse
     {
         parent::__construct($parameters);
 
-        $this->status = $this->filteredParameters['STATUS'];
+        if (array_key_exists('STATUS', $this->filteredParameters)) {
+            $this->status = $this->filteredParameters['STATUS'];
+        } elseif ($this->getComment() === 'PAYBOX : Transaction non trouvée') {
+            $this->status = Status::NOT_FOUND;
+        }
 
         if (array_key_exists('REMISE', $this->filteredParameters)) {
             $this->discount = $this->filteredParameters['REMISE'];
