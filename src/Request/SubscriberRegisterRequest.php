@@ -36,4 +36,12 @@ final class SubscriberRegisterRequest extends AbstractReferencedBearerTransactio
     {
         return RequestInterface::SUBSCRIBER_REGISTER;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParameters(): array
+    {
+        return array_merge(parent::getParameters(), $this->getID3DParameters());
+    }
 }
