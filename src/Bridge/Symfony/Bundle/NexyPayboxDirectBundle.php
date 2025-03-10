@@ -21,6 +21,7 @@ final class NexyPayboxDirectBundle extends Bundle
 {
     /**
      * {@inheritdoc}
+     * @return string
      */
     protected function getContainerExtensionClass()
     {
